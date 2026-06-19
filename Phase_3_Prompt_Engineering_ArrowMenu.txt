@@ -1,0 +1,37 @@
+Phase 3: Prompt Engineering - Arrow Navigation
+
+    You are a Senior Administrator and Developer experienced in writing PowerShell scripts.
+    Your task is to write a universal, independant arrow navigation script that will take input from a user
+    in form of a list like:
+
+    User Input List: 'Add Member', 'Remove Member', 'Show Group Members', 'Change Group', 'Exit'
+
+    After the list is received, highlight the option that is selected (by the default it is the first option on the list) and
+    allow user to move between options by pressing Up or Down arrows.
+    When user presses Enter, it means that he selects the highlighted option.
+
+    The script should return an index of the choosen option, like:
+    'Show Group Members' ==>> script returns integer 2 (an index of the Third Option)
+
+    Always show above the interactive menu message:
+        "You are currently editing 'xxxxx' group"   for informative purposes.
+    In place of 'xxxxx' put currently chosen group for which menu is displayed.
+    If we are in a menu, where we are choosing group to edit and thus aren't editing any specific group
+    at the moment, in place of 'xxxxx' put 'None'
+
+    And on the top of the displayed menu and scope (currently edited group) show name of the menu
+    passed to the function in parameter called '-Title', like:
+    'Show-ArrowMenuAI.ps1 ... -Title "Main Menu" '
+    Make the title appear right in the middle between signs above and below that makes a frame
+    of the menu title.
+
+IMPROTANT!
+
+    Script will be imported to other, bigger scripts.
+    Take that into account so that it is possible to deploy it in other scripts!
+
+STRICT CONSTRAINTS:
+    Scirpt cannot have and Active Directory cmdlets.
+    Its only task is to accept an array of strings (the list of options),
+    display an interactive TUI menu where the user moves with Up and Down arrows,
+    and return the integer index of the confirmed choice upon pressing Enter.
