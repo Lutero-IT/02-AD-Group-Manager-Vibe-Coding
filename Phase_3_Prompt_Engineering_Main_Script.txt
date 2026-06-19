@@ -1,0 +1,220 @@
+Phase 3: Prompt Engineering Main Script
+
+You are an experienced PowerShell Senior Developer and Administrator.
+Your task is to write a script that will allow a user to manage AD group members.
+The script for arrow navigation named 'Show-ArrowMenuAI.ps1' has been already created.
+
+You need only to write a script, that will perform all the AD Group Membership tasks like:
+'Addding members', 'Remove Members', 'Show Group Members' or 'Change Group' basing on the logic
+below from the section 'Functional_Specification'.
+
+The arrow navigation will be implemented by importing 'Show-ArrowMenuAI.ps1' by dot sourcing on
+the beginning of the script. For each menu present in the 'FUNCTIONAL SPECIFICATION' section use
+the imported 'Show-ArrowMenuAI.ps1' function with correct values assigned to the function parameters.
+
+SHOW-ARROW FUNCTION PARAMETERS:
+    Because 'Show-ArrowMenuAI.ps1' script takes parameters, we need to fill them.
+    PARAMETERS:
+        1. MenuOptions - this parameter takes a list of strings from a user, like:
+            'Add Member', 'Remove Member', 'Show Group Members', 'Change Group', 'Exit'
+        2. CurrentGroup - this parameter displays the currently edited group for informative purposes.
+        Take the name of the group from the AD group object when the user selects one from the list in the
+        'CHOOSE GROUP MENU' described in Specification below. If no group is selected, default value 'None'
+        will be set as a parameter value by the 'Show-ArrowMenuAI.ps1' script.
+        3. Title - this parameter takes the title of a menu in form of a string and displays it to the user.
+        Make a separate variable for each interactive menu present in the script and use this variable as a
+        'Title' parameter value.
+
+
+FUNCTIONAL SPECIFICATION:
+    
+    GLOBAL RULES:
+        1. All user text inputs, confirmations (yes/no/cancel), and usernames must be treated as case-insensitive.
+        2. Any Active Directory modification cmdlet (Add-ADGroupMember, Remove-ADGroupMember) must be wrapped in
+        a try/catch block to handle system errors (e.g., Access Denied) gracefully without crashing the program.
+        3. The program must dynamically fetch groups from a specific, pre-defined Active Directory Organizational
+        Unit (OU) path provided at the top of the script. The default path is as follow:
+            "OU=User Groups,OU=Groups,OU=Camp,DC=oldcamp,DC=gothic,DC=inc"
+        
+
+        PROGRAM START (CHOOSE GROUP MENU & MAIN MENU)
+            After launching the program user sees welcome message and is shown a menu with two options.
+            Option 1: Choose Active Directory Group
+            Option 2: Exit
+
+            User can choose one of the options by pressing arrows ( Up and Down Arrow) and pressing enter.
+            If he chooses option 2 - Exit, program closes.
+            If he chooses option 1 - a list of active directory groups is presented from which he can select a group
+            by moving to it with arrows and pressing enter.
+
+            After User chose the group, a Main Menu is presented where user is presented with such options as:
+            1. Add Member ( or Members)
+            2. Remove Member ( or Members)
+            3. Show Group Members
+            4. Change Group
+            5. Exit
+
+            Besiede that, on the top of the options, right under the header of main menu, there is an info what group is
+            currently picked, something like "You are currently editing 'xyz' group".
+            Same as in the first menu, user can move around and select options by arrows and pressing Enter to choose
+            option.
+        
+        PROGRAM CORE (OPTIONS BEHAVIOUR)
+
+            OPTION 1 - ADD MEMBER:
+                We start with first option - Add Member.
+                After user selects the option, he is asked about the user or users he wishes to add and is given option to quit the
+                'add member' operation and return to the main menu by typing 'cancel' or 'c' instead of a username.
+                
+                If user proceeds and provides user or users to add, 3 scenarios can happen depending on what the input is:
+
+                1 SCENARIO: Input is empty
+                    If user just presses Enter without typing anything, appropiate message informing about empty input
+                    is shown and program loops back to the message where asks for user to add or cancel.
+                
+                2 SCENARIO: User typed 'cancel' or 'c'
+                    Program terminates add operation right away and returns to the main menu informing about cancellation
+                    of the 'add member' operation.
+
+                3 SCENARIO: User provides input
+
+                    User typed something to the prompt, so we need to check if it is an AD account
+                    or accounts present in the AD database.
+
+                    1 FOLLOW-SCENARIO: Input is an existing AD Account
+                        Provided input is being validated and proves that is AD Account existing in the AD databese.
+                        After that, the program checks whether the account is not already a member of the target group.
+
+                        If it is, then the operation is terminated and appropiate message informing about account
+                        membership is communicated. Program returns to the Main Menu.
+
+                        If it is not, then user is informed about it and asked to confirm the 'add member' operation by typing
+                        'yes' or 'y' for confirmation or 'no' or 'n' for negation.
+
+                        If user confirms operation, user is added to the target group. Appropiate message is shown.
+                        If user negates operation, user is not added to the target group. Appropiate message is shown
+                        and program returns to the Main Menu.
+
+                        If user type nor [yes/y] and [no/n] or type nothing (just press enter)
+                        or type anything else like 'abcd', Appropiate message is shown
+                        and program returns to the Main Menu.
+                    
+                    2 FOLLOW-SCENARIO: Input is non-existent AD Account
+                        Provided input is being validated and proves that IS NOT an AD Account existing in the AD databese.
+                        Program terminates right away and returns to the main menu informing about failure of the
+                        'add member' operation.
+                    
+                    3 FOLLOW SCENARIO:
+                        User provides a string with comma separated values, like "John, Adam, Amy"
+
+                        In that case the list is splitted by commas and trimmed of any left whitespace.
+                        Now for each input on the list we need to validate if it is an existing account.
+                        If it is we check whether it is a member of the target group or not.
+
+                        If it is, then an appropiate message about user already belonging to the group is displayed
+                        and script moves to the next user on the list.
+
+                        If it is not, then user is informed about it and asked to confirm the 'add member' operation by typing
+                        'yes' or 'y' for confirmation or 'no' or 'n' for negation.
+
+                        If user confirms operation, user is added to the target group. Appropiate message is shown.
+                        If user negates operation, appropaite message is shown and script moves to the next user
+                        on the list.
+
+                        If user type nor [yes/y] and [no/n] or type nothing (just press enter)
+                        or type anything else like 'abcd', appropaite message is shown and script moves to the next user
+                        on the list.
+
+                        In case there is no more users on the list, the 'add member' operation terminates and returns
+                        to the Main Menu.
+                        
+
+                            
+            OPTION 2 - REMOVE MEMBER:
+                After user selects the 'Remove Member' option, he is presented with interactive menu, where he can select and
+                confirm option by pressing Enter.
+
+                REMOVE MENU:
+                    Consist of options that follow:
+                    1. Remove member
+                    2. Show group members
+                    3. Back to Main Menu
+                
+                (REMOVE MENU) OPTION 1 - REMOVE MEMBER
+                    After user selects the option, he is asked about the user or users he wishes to remove and is given option to
+                    quit the 'remove member' operation and return to the remove menu by typing 'cancel' or 'c' instead of a username.
+                    If user proceeds and provides user or users to remove, 3 scenarios can happen depending on what the input is:
+
+                    1 SCENARIO: Input is empty
+                        If user just presses Enter without typing anything, appropiate message informing about empty input
+                        is shown and program loops back to the message where asks for user to remove or cancel.
+                    
+                    2 SCENARIO: User typed 'cancel' or 'c'
+                        Program terminates remove operation right away and returns to the remove menu informing about cancellation
+                        of the 'remove member' operation.
+
+                    3 SCENARIO: User provides input
+
+                        User typed something to the prompt, so we need to check if it is an AD account or accounts
+                        present in the AD database.
+
+                        1 FOLLOW-SCENARIO: Input is an existing AD Account
+                            Provided input is being validated and proves that is AD Account existing in the AD databese.
+                            After that, the program checks whether the account is already a member of the target group.
+
+                            If it is, then user is informed about it and asked to confirm the 'remove member' operation by typing
+                            'yes' or 'y' for confirmation or 'no' or 'n' for negation.
+                            
+                            If it is not, then the operation is terminated and appropiate message informing about account
+                            membership is communicated. Program returns to the Remove Menu.
+
+                            If user confirms operation, user is removed to the target group. Appropiate message is shown.
+                            If user negates operation, user is not removed to the target group. Appropiate message is shown
+                            and Program returns to the Remove Menu.
+
+                            If user type nor [yes/y] and [no/n] or type nothing (just press enter)
+                            or anything else like 'abcd', Appropiate message is shown
+                            and program returns to the Remove Menu.
+                        
+                        2 FOLLOW-SCENARIO: Input is non-existent AD Account
+                            Provided input is being validated and proves that IS NOT an AD Account existing in the AD databese.
+                            Program terminates right away and returns to the remove menu informing about failure of the
+                            'remove member' operation.
+                        
+                        3 FOLLOW SCENARIO:
+                            User provides a string with comma separated values, like "John, Adam, Amy"
+
+                            In that case the list is splitted by commas and trimmed of any left whitespace.
+                            Now for each input on the list we need to validate if it is an existing account.
+                            If it is we check whether it is a member of the target group or not.
+
+                            If it is not, then an appropiate message about user not belonging to the group is displayed
+                            and script moves to the next user on the list.
+
+                            If it is, then user is informed about it and asked to confirm the 'remove member' operation by typing
+                            'yes' or 'y' for confirmation or 'no' or 'n' for negation.
+
+                            If user confirms operation, user is removed to the target group. Appropiate message is shown.
+                            If user negates operation, appropaite message is shown and script moves to the next user
+                            on the list.
+
+                            If user type nor [yes/y] and [no/n] or type nothing (just press enter)
+                            or type anything else like 'abcd', appropaite message is shown and script moves to the next user
+                            on the list.
+
+                            In case there is no more users on the list, the 'remove member' operation terminates and returns
+                            to the Remove Menu.
+
+                        
+            OPTION 3 - SHOW GROUP MEMBERS:
+                Simply show group members of the target group.
+                If some operations were performed like adding or removing user or users,
+                the shown result should reflect updated group state.
+
+            OPTION 4 - CHANGE GROUP:
+                Because we have already mechanism that allows us to choose group from the start of the program
+                (CHOOSE GROUP MENU) we don't have to write another one.
+                Just reuse that mechanism of choosing group from the start of the program.
+
+            OPTION 5 - EXIT PROGRAM:
+                Simply terminate the program.
