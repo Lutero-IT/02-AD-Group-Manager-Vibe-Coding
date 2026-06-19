@@ -1,0 +1,11 @@
+Phase 2: Architectural Decomposition
+
+Create 2 separate files.
+First is a main script that has all the logic required for program to work and perform operations
+such as adding or removing group members, described in 'Phase_1_Functional_Specification.txt' file BUT doesn't have
+logic for arrow navigation. This logic will be in second file created.
+
+Second file has ONLY logic that creates arrow navigation by taking list of options and displays them in a form 
+of a list where options are one under another and you can move between them with Up and Down arrows and select
+by pressing enter.
+
